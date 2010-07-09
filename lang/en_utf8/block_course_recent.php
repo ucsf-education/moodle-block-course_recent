@@ -1,5 +1,5 @@
 <?php // $Id: $
-$string['recent_courses'] = 'Recent Courses';
+$string['course_recent'] = 'Recent Courses';
 $string['blockname'] = 'Recent Courses';
 $string['default_max'] = 'Max number of courses';
 $string['default_max_desc'] = 'The maximum number of recently visited courses to the block will display by default.'.
@@ -12,5 +12,5 @@ $string['userlimit'] = 'Maximum number of courses to display';
 $string['error1'] = 'The number cannot be less than 1';
 $string['error2'] = 'The number cannot be greater than 10';
 $string['header'] = 'Recent Courses';
-$string['recent_courses:changelimit'] = 'Change the maximum number of courses to display';
+$string['course_recent:changelimit'] = 'Change the maximum number of courses to display';
 ?>

@@ -23,9 +23,9 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-$block_recent_courses_capabilities = array(
+$block_course_recent_capabilities = array(
 
-    'block/recent_courses:changelimit' => array(
+    'block/course_recent:changelimit' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,

@@ -1,15 +1,15 @@
 <?php // $Id: $
 
-class block_recent_courses extends block_base {
+class block_course_recent extends block_base {
     function init() {
-        $this->title   = get_string('recent_courses', 'block_recent_courses');
+        $this->title   = get_string('course_recent', 'block_course_recent');
         $this->version = 201006280;
     }
 
     function get_content() {
         global $CFG, $USER, $COURSE;
 
-        require_once($CFG->dirroot.'/blocks/recent_courses/lib.php');
+        require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
 
         if ($this->content !== NULL) {
           return $this->content;
@@ -29,9 +29,9 @@ class block_recent_courses extends block_base {
 
         $i = 1;
 
-        $maximum = isset($CFG->block_recent_courses_default) ? $CFG->block_recent_courses_default : DEFAULT_MAX;
+        $maximum = isset($CFG->block_course_recent_default) ? $CFG->block_course_recent_default : DEFAULT_MAX;
 
-        $userlimit = get_field('block_recent_courses', 'userlimit', 'blockid', $this->instance->id,
+        $userlimit = get_field('block_course_recent', 'userlimit', 'blockid', $this->instance->id,
                                'userid', $USER->id);
 
         // Override the global setting if the user limit is set
@@ -47,7 +47,7 @@ class block_recent_courses extends block_base {
 
         // Set flag to check user's role on the course
         $checkrole = false;
-        if ($CFG->block_recent_courses_musthaverole) {
+        if ($CFG->block_course_recent_musthaverole) {
             $checkrole = true;
         }
 
@@ -106,10 +106,10 @@ class block_recent_courses extends block_base {
 
         $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
 
-        if (has_capability('block/recent_courses:changelimit', $context, $USER->id)) {
-            $this->content->footer = '<a href="'.$CFG->wwwroot.'/blocks/recent_courses/usersettings.php?'.
+        if (has_capability('block/course_recent:changelimit', $context, $USER->id)) {
+            $this->content->footer = '<a href="'.$CFG->wwwroot.'/blocks/course_recent/usersettings.php?'.
                                      'blockid='. $this->instance->id.'&courseid='.$COURSE->id.'">'.
-                                     get_string('settings', 'block_recent_courses') . '</a>';
+                                     get_string('settings', 'block_course_recent') . '</a>';
         } else {
             $this->content->footer = '';
         }

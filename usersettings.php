@@ -13,7 +13,7 @@
 
     $usersetting_form = new usersettings_form();
 
-    $record = get_record('block_recent_courses', 'userid', $USER->id, 'blockid', $blockid);
+    $record = get_record('block_course_recent', 'userid', $USER->id, 'blockid', $blockid);
 
     // Set the hidden form elements
     if (!empty($record)) {
@@ -30,9 +30,9 @@
 
     } else if ($data = $usersetting_form->get_data()) {
         if (!empty($data->id)) {
-            update_record('block_recent_courses', $data);
+            update_record('block_course_recent', $data);
         } else {
-            insert_record('block_recent_courses', $data);
+            insert_record('block_course_recent', $data);
         }
 
         redirect($CFG->wwwroot.'/course/view.php?id='. $courseid);
@@ -45,11 +45,11 @@
         $shortname = get_field('course', 'shortname', 'id', $courseid);
         $navlinks[] = array('name' => format_string($shortname), 'link' => "view.php?id=$courseid", 'type' => 'link');
     }
-    $navlinks[] = array('name' => get_string('breadcrumb', 'block_recent_courses'), 'link' => '', 'type' => 'misc');
+    $navlinks[] = array('name' => get_string('breadcrumb', 'block_course_recent'), 'link' => '', 'type' => 'misc');
 
     $navigation = build_navigation($navlinks);
 
-    print_header_simple(get_string('header', 'block_recent_courses'), '', $navigation);
+    print_header_simple(get_string('header', 'block_course_recent'), '', $navigation);
 
     $usersetting_form->display();
 

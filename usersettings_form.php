@@ -9,7 +9,7 @@ class usersettings_form extends moodleform {
 
           $mform =& $this->_form;
 
-          $mform->addElement('text', 'userlimit', get_string('userlimit', 'block_recent_courses'), 'maxlength="5" size="5"');
+          $mform->addElement('text', 'userlimit', get_string('userlimit', 'block_course_recent'), 'maxlength="5" size="5"');
           $mform->setType('userlimit', PARAM_INT);
 
           $mform->addElement('hidden', 'blockid');
@@ -27,9 +27,9 @@ class usersettings_form extends moodleform {
         $errors = parent::validation($data, $files);
 
         if (LOWER_LIMIT > $data['userlimit']) {
-            $errors['userlimit'] = get_string('error1', 'block_recent_courses');
+            $errors['userlimit'] = get_string('error1', 'block_course_recent');
         } elseif (UPPER_LIMIT < $data['userlimit']) {
-            $errors['userlimit'] = get_string('error2', 'block_recent_courses');
+            $errors['userlimit'] = get_string('error2', 'block_course_recent');
         }
 
         return $errors;
