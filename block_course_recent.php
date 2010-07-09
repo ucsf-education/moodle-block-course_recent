@@ -32,16 +32,35 @@ class block_course_recent extends block_base {
             $maximum = UPPER_LIMIT;
         }
 
-        // Get a list of all courses that have been viewed by the user,
-        $sql = "SELECT DISTINCT(logs.course)
-                FROM (
-                    SELECT course, time
-                    FROM mdl_log
-                    WHERE userid = 2
-                    AND course NOT IN(0, 1)
-                    AND action = 'view'
-                    ORDER BY time DESC
-                ) AS logs";
+        // Set flag to check user's role on the course
+        $checkrole = !empty($CFG->block_course_recent_musthaverole);
+
+        // Get a list of all courses that have been viewed by the user.
+        if (!$checkrole) {
+            $sql = "SELECT DISTINCT(logs.course)
+                    FROM (
+                        SELECT l.course, l.time
+                        FROM {$CFG->prefix}log l
+                        WHERE l.userid = 2
+                        AND l.course NOT IN(0, 1)
+                        AND l.action = 'view'
+                        ORDER BY l.time DESC
+                    ) AS logs";
+        } else {
+            $sql = "SELECT DISTINCT(logs.course)
+                    FROM (
+                        SELECT l.course, l.time
+                        FROM {$CFG->prefix}log l
+                        INNER JOIN {$CFG->prefix}context ctx ON l.course = ctx.instanceid
+                        INNER JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
+                        WHERE l.userid = 2
+                        AND l.course NOT IN(0, 1)
+                        AND ctx.contextlevel = " . CONTEXT_COURSE . "
+                        AND ra.userid = l.userid
+                        AND l.action = 'view'
+                        ORDER BY l.time DESC
+                    ) AS logs";
+        }
 
         $records = get_records_sql($sql, 0, $maximum);
 
@@ -51,62 +70,26 @@ class block_course_recent extends block_base {
 
         $text = '';
 
-        $roleid = get_field('role', 'id', 'shortname', 'student');
-
         $i = 1;
 
-        // Set flag to check user's role on the course
-        $checkrole = false;
-        if ($CFG->block_course_recent_musthaverole) {
-            $checkrole = true;
-        }
-
-
         // Set flag to display hidden courses
-        $showhidden = false;
-        $context = get_context_instance(CONTEXT_SYSTEM);
-        if (has_capability('moodle/course:viewhiddencourses', $context, $USER->id)) {
-            $showhidden = true;
-        }
+        $context    = get_context_instance(CONTEXT_SYSTEM);
+        $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
 
         // Set flag to true by defafult
         $showcourse = true;
 
         // Create links for each course that was viewed by the user
         foreach ($records as $key => $record) {
+            $visible = get_field('course', 'visible', 'id', $record->course);
 
-            if ($i <= $maximum) {
-                // This shouldn't be necessary as we're already
-                if (empty($record->course) or $record->course === SITEID) {
-                    unset($records[$key]);
-                } else {
+            $class = ($visible) ? 'visible' : 'notvisible';
 
-                    $i++;
-
-                    $visible = get_field('course', 'visible', 'id', $record->course);
-
-                    $class = ($visible) ? 'visible' : 'notvisible';
-
-                    $context = get_context_instance(CONTEXT_COURSE, $record->course);
-
-                    if ($checkrole) {
-                        if (record_exists('role_assignments', 'userid', $USER->id, 'contextid', $context->id)) {
-                            $showcourse = true;
-                        } else {
-                            $showcourse = false;
-                        }
-                    }
-
-                    if ( ($visible or $showhidden) and $showcourse ) {
-                        // Get a list or courses where the user has the student role
-                        $fullname = get_field('course', 'fullname', 'id', $record->course);
-                        $text .= '<a class="'.$class.'" href="'. $CFG->wwwroot .'/course/view.php?id='.
-                                 $record->course .'">' . $fullname . '</a><br />';
-                    }
-                }
-            } else {
-                // break out of loop once maximum is reached
-                break;
+            if ($visible or $showhidden) {
+                // Get a list or courses where the user has the student role
+                $fullname = get_field('course', 'fullname', 'id', $record->course);
+                $text .= '<a class="'.$class.'" href="'. $CFG->wwwroot .'/course/view.php?id='.
+                         $record->course .'">' . $fullname . '</a><br />';
             }
         }
 
