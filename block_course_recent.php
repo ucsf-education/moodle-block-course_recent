@@ -15,20 +15,6 @@ class block_course_recent extends block_base {
           return $this->content;
         }
 
-        // Get a list of all courses that have been viewed by the user,
-        $sql = "SELECT DISTINCT(course) FROM {$CFG->prefix}log WHERE userid = {$USER->id} AND action = 'view' ORDER BY time DESC";
-        $records = get_records_sql($sql);
-
-        if (empty($records)) {
-            $records = array();
-        }
-
-        $text = '';
-
-        $roleid = get_field('role', 'id', 'shortname', 'student');
-
-        $i = 1;
-
         $maximum = isset($CFG->block_course_recent_default) ? $CFG->block_course_recent_default : DEFAULT_MAX;
 
         $userlimit = get_field('block_course_recent', 'userlimit', 'blockid', $this->instance->id,
@@ -39,11 +25,35 @@ class block_course_recent extends block_base {
             $maximum = $userlimit;
         }
 
+        // Make sure the maximum record number is within the acceptible range.
         if (LOWER_LIMIT > $maximum) {
             $maximum = LOWER_LIMIT;
         } elseif (UPPER_LIMIT < $maximum) {
             $maximum = UPPER_LIMIT;
         }
+
+        // Get a list of all courses that have been viewed by the user,
+        $sql = "SELECT DISTINCT(logs.course)
+                FROM (
+                    SELECT course, time
+                    FROM mdl_log
+                    WHERE userid = 2
+                    AND course NOT IN(0, 1)
+                    AND action = 'view'
+                    ORDER BY time DESC
+                ) AS logs";
+
+        $records = get_records_sql($sql, 0, $maximum);
+
+        if (empty($records)) {
+            $records = array();
+        }
+
+        $text = '';
+
+        $roleid = get_field('role', 'id', 'shortname', 'student');
+
+        $i = 1;
 
         // Set flag to check user's role on the course
         $checkrole = false;
@@ -66,8 +76,8 @@ class block_course_recent extends block_base {
         foreach ($records as $key => $record) {
 
             if ($i <= $maximum) {
-                if ($record->course == 0 or $record->course == 1) {
-
+                // This shouldn't be necessary as we're already
+                if (empty($record->course) or $record->course === SITEID) {
                     unset($records[$key]);
                 } else {
 
@@ -81,7 +91,6 @@ class block_course_recent extends block_base {
 
                     if ($checkrole) {
                         if (record_exists('role_assignments', 'userid', $USER->id, 'contextid', $context->id)) {
-//                        if (user_has_role_assignment($USER->id, $roleid, $context->id)) {
                             $showcourse = true;
                         } else {
                             $showcourse = false;
