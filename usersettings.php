@@ -62,9 +62,13 @@ if ($usersetting_form->is_cancelled()) {
 
 $navlinks = array();
 
-if ($courseid and 1 < $courseid) {
+if ($courseid && $courseid !== SITEID) {
     $shortname = get_field('course', 'shortname', 'id', $courseid);
-    $navlinks[] = array('name' => format_string($shortname), 'link' => "view.php?id=$courseid", 'type' => 'link');
+    $navlinks[] = array(
+        'name' => format_string($shortname),
+        'link' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,
+        'type' => 'link'
+    );
 }
 $navlinks[] = array('name' => get_string('breadcrumb', 'block_course_recent'), 'link' => '', 'type' => 'misc');
 
