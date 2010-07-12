@@ -15,6 +15,14 @@ class block_course_recent extends block_base {
           return $this->content;
         }
 
+        $this->content         =  new stdClass;
+        $this->content->text   = '';
+        $this->content->footer = '';
+
+        if (!isloggedin()) {
+            return $this->content;
+        }
+
         $maximum = isset($CFG->block_course_recent_default) ? $CFG->block_course_recent_default : DEFAULT_MAX;
 
         $userlimit = get_field('block_course_recent', 'userlimit', 'blockid', $this->instance->id,
@@ -93,8 +101,7 @@ class block_course_recent extends block_base {
             }
         }
 
-        $this->content         =  new stdClass;
-        $this->content->text   = $text;
+        $this->content->text = $text;
 
         $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
 
@@ -102,8 +109,6 @@ class block_course_recent extends block_base {
             $this->content->footer = '<a href="'.$CFG->wwwroot.'/blocks/course_recent/usersettings.php?'.
                                      'blockid='. $this->instance->id.'&courseid='.$COURSE->id.'">'.
                                      get_string('settings', 'block_course_recent') . '</a>';
-        } else {
-            $this->content->footer = '';
         }
 
         return $this->content;
