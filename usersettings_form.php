@@ -25,22 +25,28 @@ require_once($CFG->libdir.'/formslib.php');
 require_once('lib.php');
 
 class usersettings_form extends moodleform {
-      function definition() {
-          global $USER, $CFG;
+    function definition() {
+        global $USER, $CFG;
 
-          $mform =& $this->_form;
+        $mform =& $this->_form;
 
-          $mform->addElement('text', 'userlimit', get_string('userlimit', 'block_course_recent'), 'maxlength="5" size="5"');
-          $mform->setType('userlimit', PARAM_INT);
+        $choices = array();
 
-          $mform->addElement('hidden', 'blockid');
-          $mform->addElement('hidden', 'userid');
-          $mform->addElement('hidden', 'id');
-          $mform->addElement('hidden', 'courseid');
+        for ($i = 1; $i <= 10; $i++) {
+            $choices[$i] = $i;
+        }
 
-          $this->add_action_buttons(true);
+        $mform->addElement('select', 'userlimit', get_string('userlimit', 'block_course_recent'), $choices);
+        $mform->setDefault('userlimit', DEFAULT_MAX);
+        $mform->setType('userlimit', PARAM_INT);
 
-     }
+        $mform->addElement('hidden', 'blockid');
+        $mform->addElement('hidden', 'userid');
+        $mform->addElement('hidden', 'id');
+        $mform->addElement('hidden', 'courseid');
+
+        $this->add_action_buttons(true);
+    }
 
     function validation($data, $files) {
         global $CFG;
