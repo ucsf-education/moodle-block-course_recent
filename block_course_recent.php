@@ -23,7 +23,7 @@
 
 class block_course_recent extends block_list {
     function init() {
-        $this->title   = get_string('course_recent', 'block_course_recent');
+        $this->title   = get_string('blockname', 'block_course_recent');
         $this->version = 2010071300;
     }
 
@@ -45,6 +45,14 @@ class block_course_recent extends block_list {
             return $this->content;
         }
 
+        $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
+
+        if (has_capability('block/course_recent:changelimit', $context, $USER->id)) {
+            $this->content->footer = '<a href="' . $CFG->wwwroot.'/blocks/course_recent/usersettings.php?' .
+                                     'courseid='.$COURSE->id . '">' . get_string('settings', 'block_course_recent') .
+                                     '</a>';
+        }
+
         $maximum = isset($CFG->block_course_recent_default) ? $CFG->block_course_recent_default : DEFAULT_MAX;
 
         $userlimit = get_field('block_course_recent', 'userlimit', 'userid', $USER->id);
@@ -64,72 +72,83 @@ class block_course_recent extends block_list {
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
 
+        // Set flag to display hidden courses
+        $context    = get_context_instance(CONTEXT_SYSTEM);
+        $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
+
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
-            $sql = "SELECT DISTINCT(logs.course)
+            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible
                     FROM (
                         SELECT l.course, l.time
                         FROM {$CFG->prefix}log l
-                        WHERE l.userid = 2
+                        ";
+
+            // If the user cannot view hidden courses, we must remove invisible courses from the results.
+            if (!$showhidden) {
+                $sql .= "INNER JOIN {$CFG->prefix}course c2 ON l.course = c2.id\n";
+            }
+
+            $sql .= "WHERE l.userid = {$USER->id}
                         AND l.course NOT IN(0, 1)
                         AND l.action = 'view'
-                        ORDER BY l.time DESC
-                    ) AS logs";
+                        ";
+
+            // If the user cannot view hidden courses, we must remove invisible courses from the results.
+            if (!$showhidden) {
+                $sql .= "AND c2.visible = 1\n";
+            }
+
+            $sql .= "ORDER BY l.time DESC
+                    ) AS logs
+                    INNER JOIN {$CFG->prefix}course c ON logs.course = c.id";
         } else {
-            $sql = "SELECT DISTINCT(logs.course)
+            // The following SQL will ensure that the user has a current role assignment within the course.
+            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible
                     FROM (
                         SELECT l.course, l.time
                         FROM {$CFG->prefix}log l
                         INNER JOIN {$CFG->prefix}context ctx ON l.course = ctx.instanceid
                         INNER JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
-                        WHERE l.userid = 2
+                        ";
+
+            // If the user cannot view hidden courses, we must remove invisible courses from the results.
+            if (!$showhidden) {
+                $sql .= "INNER JOIN {$CFG->prefix}course c2 ON l.course = c2.id\n";
+            }
+
+            $sql .= "WHERE l.userid = {$USER->id}
                         AND l.course NOT IN(0, 1)
                         AND ctx.contextlevel = " . CONTEXT_COURSE . "
                         AND ra.userid = l.userid
                         AND l.action = 'view'
-                        ORDER BY l.time DESC
-                    ) AS logs";
+                        ";
+
+            // If the user cannot view hidden courses, we must remove invisible courses from the results.
+            if (!$showhidden) {
+                $sql .= "AND c2.visible = 1\n";
+            }
+
+            $sql .= "ORDER BY l.time DESC
+                    ) AS logs
+                    INNER JOIN {$CFG->prefix}course c ON logs.course = c.id";
         }
 
-        $records = get_records_sql($sql, 0, $maximum);
-
-        if (empty($records)) {
-            $records = array();
+        if (!$records = get_records_sql($sql, 0, $maximum)) {
+            $this->content->items[] = get_string('youhavenotentredanycourses', 'block_course_recent');
+            $this->content->icons[] = '';
+            return $this->content;
         }
-
-        $i = 1;
-
-        // Set flag to display hidden courses
-        $context    = get_context_instance(CONTEXT_SYSTEM);
-        $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
-
-        // Set flag to true by defafult
-        $showcourse = true;
 
         $icon  = '<img src="' . $CFG->pixpath . '/i/course.gif" class="icon" alt="' .
                  get_string('coursecategory') . '" />';
 
         // Create links for each course that was viewed by the user
         foreach ($records as $key => $record) {
-            $visible = get_field('course', 'visible', 'id', $record->course);
-
-            $class = ($visible) ? 'visible' : 'notvisible';
-
-            if ($visible or $showhidden) {
-                // Get a list or courses where the user has the student role
-                $fullname = get_field('course', 'fullname', 'id', $record->course);
-                $this->content->items[] = '<a class="' . $class . '" href="'. $CFG->wwwroot .'/course/view.php?id=' .
-                                          $record->course . '">' . $fullname . '</a>';
-                $this->content->icons[] = $icon;
-            }
-        }
-
-        $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
-
-        if (has_capability('block/course_recent:changelimit', $context, $USER->id)) {
-            $this->content->footer = '<a href="' . $CFG->wwwroot.'/blocks/course_recent/usersettings.php?' .
-                                     'courseid='.$COURSE->id . '">' . get_string('settings', 'block_course_recent') .
-                                     '</a>';
+            $this->content->items[] = '<a class="' . ($record->visible) ? 'visible' : 'notvisible' . '" href="'.
+                                      $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
+                                      $record->fullname . '</a>';
+            $this->content->icons[] = $icon;
         }
 
         return $this->content;
