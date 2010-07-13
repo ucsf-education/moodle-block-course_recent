@@ -21,10 +21,10 @@
  */
 
 
-class block_course_recent extends block_base {
+class block_course_recent extends block_list {
     function init() {
         $this->title   = get_string('course_recent', 'block_course_recent');
-        $this->version = 201006280;
+        $this->version = 2010071300;
     }
 
     function get_content() {
@@ -37,7 +37,8 @@ class block_course_recent extends block_base {
         }
 
         $this->content         =  new stdClass;
-        $this->content->text   = '';
+        $this->content->items  = array();
+        $this->content->icons  = array();
         $this->content->footer = '';
 
         if (!isloggedin()) {
@@ -96,8 +97,6 @@ class block_course_recent extends block_base {
             $records = array();
         }
 
-        $text = '';
-
         $i = 1;
 
         // Set flag to display hidden courses
@@ -106,6 +105,9 @@ class block_course_recent extends block_base {
 
         // Set flag to true by defafult
         $showcourse = true;
+
+        $icon  = '<img src="' . $CFG->pixpath . '/i/course.gif" class="icon" alt="' .
+                 get_string('coursecategory') . '" />';
 
         // Create links for each course that was viewed by the user
         foreach ($records as $key => $record) {
@@ -116,12 +118,11 @@ class block_course_recent extends block_base {
             if ($visible or $showhidden) {
                 // Get a list or courses where the user has the student role
                 $fullname = get_field('course', 'fullname', 'id', $record->course);
-                $text .= '<a class="'.$class.'" href="'. $CFG->wwwroot .'/course/view.php?id='.
-                         $record->course .'">' . $fullname . '</a><br />';
+                $this->content->items[] = '<a class="' . $class . '" href="'. $CFG->wwwroot .'/course/view.php?id=' .
+                                          $record->course . '">' . $fullname . '</a>';
+                $this->content->icons[] = $icon;
             }
         }
-
-        $this->content->text = $text;
 
         $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
 
