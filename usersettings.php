@@ -65,7 +65,7 @@ if ($usersetting_form->is_cancelled()) {
 
 $navlinks = array();
 
-if ($courseid && $courseid !== SITEID) {
+if ($courseid && $courseid != SITEID) {
     $shortname = get_field('course', 'shortname', 'id', $courseid);
     $navlinks[] = array(
         'name' => format_string($shortname),
