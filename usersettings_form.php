@@ -40,7 +40,6 @@ class usersettings_form extends moodleform {
         $mform->setDefault('userlimit', DEFAULT_MAX);
         $mform->setType('userlimit', PARAM_INT);
 
-        $mform->addElement('hidden', 'blockid');
         $mform->addElement('hidden', 'userid');
         $mform->addElement('hidden', 'id');
         $mform->addElement('hidden', 'courseid');

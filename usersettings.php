@@ -27,23 +27,26 @@ defined('MOODLE_INTERNAL') OR die('Direct access to this script is forbidden');
 
 require_login();
 
-$blockid    = required_param('blockid', PARAM_INT);
-$courseid   = required_param('courseid', PARAM_INT);
-
-global $CFG, $USER;
+$courseid = required_param('courseid', PARAM_INT);
 
 $usersetting_form = new usersettings_form();
 
-$record = get_record('block_course_recent', 'userid', $USER->id, 'blockid', $blockid);
+$record = get_record('block_course_recent', 'userid', $USER->id);
 
 // Set the hidden form elements
 if (!empty($record)) {
-    $usersetting_form->set_data(array('blockid' => $blockid, 'userid' => $USER->id,
-                                      'id' => $record->id, 'userlimit' => $record->userlimit,
-                                      'courseid' => $courseid));
+    $usersetting_form->set_data(array(
+        'userid'    => $USER->id,
+        'id'        => $record->id,
+        'userlimit' => $record->userlimit,
+        'courseid'  => $courseid
+    ));
 } else {
-    $usersetting_form->set_data(array('blockid' => $blockid, 'userid' => $USER->id,
-                                      'id' => 0, 'courseid' => $courseid));
+    $usersetting_form->set_data(array(
+        'userid'   => $USER->id,
+        'id'       => 0,
+        'courseid' => $courseid
+    ));
 }
 
 if ($usersetting_form->is_cancelled()) {

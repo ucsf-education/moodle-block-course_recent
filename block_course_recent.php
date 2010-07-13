@@ -46,8 +46,7 @@ class block_course_recent extends block_base {
 
         $maximum = isset($CFG->block_course_recent_default) ? $CFG->block_course_recent_default : DEFAULT_MAX;
 
-        $userlimit = get_field('block_course_recent', 'userlimit', 'blockid', $this->instance->id,
-                               'userid', $USER->id);
+        $userlimit = get_field('block_course_recent', 'userlimit', 'userid', $USER->id);
 
         // Override the global setting if the user limit is set
         if (!empty($userlimit)) {
@@ -127,9 +126,9 @@ class block_course_recent extends block_base {
         $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
 
         if (has_capability('block/course_recent:changelimit', $context, $USER->id)) {
-            $this->content->footer = '<a href="'.$CFG->wwwroot.'/blocks/course_recent/usersettings.php?'.
-                                     'blockid='. $this->instance->id.'&courseid='.$COURSE->id.'">'.
-                                     get_string('settings', 'block_course_recent') . '</a>';
+            $this->content->footer = '<a href="' . $CFG->wwwroot.'/blocks/course_recent/usersettings.php?' .
+                                     'courseid='.$COURSE->id . '">' . get_string('settings', 'block_course_recent') .
+                                     '</a>';
         }
 
         return $this->content;
