@@ -145,7 +145,7 @@ class block_course_recent extends block_list {
 
         // Create links for each course that was viewed by the user
         foreach ($records as $key => $record) {
-            $this->content->items[] = '<a class="' . ($record->visible) ? 'visible' : 'notvisible' . '" href="'.
+            $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'notvisible') . '" href="'.
                                       $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
                                       $record->fullname . '</a>';
             $this->content->icons[] = $icon;
