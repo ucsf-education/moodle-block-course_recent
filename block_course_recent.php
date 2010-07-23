@@ -41,7 +41,7 @@ class block_course_recent extends block_list {
         $this->content->icons  = array();
         $this->content->footer = '';
 
-        if (!isloggedin()) {
+        if (!isloggedin() or isguestuser()) {
             return $this->content;
         }
 
@@ -72,10 +72,6 @@ class block_course_recent extends block_list {
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
 
-        // Set flag to display hidden courses - commented out code
-        //$context    = get_context_instance(CONTEXT_SYSTEM);
-        //$showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
-
         $showhidden = true;
 
         // Get a list of all courses that have been viewed by the user.
@@ -86,20 +82,10 @@ class block_course_recent extends block_list {
                         FROM {$CFG->prefix}log l
                         ";
 
-            // If the user cannot view hidden courses, we must remove invisible courses from the results.
-            //if (!$showhidden) {
-            //    $sql .= "INNER JOIN {$CFG->prefix}course c2 ON l.course = c2.id\n";
-            //}
-
             $sql .= "WHERE l.userid = {$USER->id}
                         AND l.course NOT IN(0, 1)
                         AND l.action = 'view'
                         ";
-
-            // If the user cannot view hidden courses, we must remove invisible courses from the results.
-            //if (!$showhidden) {
-            //    $sql .= "AND c2.visible = 1\n";
-            //}
 
             $sql .= "ORDER BY l.time DESC
                     ) AS logs
@@ -114,22 +100,12 @@ class block_course_recent extends block_list {
                         INNER JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
                         ";
 
-            // If the user cannot view hidden courses, we must remove invisible courses from the results.
-            //if (!$showhidden) {
-            //    $sql .= "INNER JOIN {$CFG->prefix}course c2 ON l.course = c2.id\n";
-            //}
-
             $sql .= "WHERE l.userid = {$USER->id}
                         AND l.course NOT IN(0, 1)
                         AND ctx.contextlevel = " . CONTEXT_COURSE . "
                         AND ra.userid = l.userid
                         AND l.action = 'view'
                         ";
-
-            // If the user cannot view hidden courses, we must remove invisible courses from the results.
-            //if (!$showhidden) {
-            //    $sql .= "AND c2.visible = 1\n";
-            //}
 
             $sql .= "ORDER BY l.time DESC
                     ) AS logs
@@ -139,7 +115,7 @@ class block_course_recent extends block_list {
         $records = get_recordset_sql($sql, 0, $maximum);
 
         if (!$records or rs_EOF($records)) {
-        //if (!$records = get_records_sql($sql, 0, $maximum)) {
+
             $this->content->items[] = get_string('youhavenotentredanycourses', 'block_course_recent');
             $this->content->icons[] = '';
             return $this->content;
@@ -150,8 +126,8 @@ class block_course_recent extends block_list {
 
         // Create links for each course that was viewed by the user
         while ($record = rs_fetch_next_record($records)) {
-        //foreach ($records as $key => $record) {
-            $context    = get_context_instance(CONTEXT_COURSE, $record->course);
+
+            $context = get_context_instance(CONTEXT_COURSE, $record->course);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
 
             if ($showhidden and !$record->visible) {
