@@ -71,6 +71,7 @@ class block_course_recent extends block_list {
 
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
+        $checkrole = true;
 
         $showhidden = true;
 
