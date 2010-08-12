@@ -130,7 +130,15 @@ class block_course_recent extends block_list {
 
             $context = get_context_instance(CONTEXT_COURSE, $record->course);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
-            $showcourse = has_capability('moodle/course:viewparticipants', $context, $USER->id);
+
+            // Check the 'view participants' capability if the block has the
+            // 'most have role in course' is turned off.  We need this because
+            // Users may have roles outside of the course context
+            if (!$checkrole) {
+                $showcourse = has_capability('moodle/course:viewparticipants', $context, $USER->id);
+            } else {
+                $showcourse = true;
+            }
 
             if ($showcourse) {
                 if ($showhidden and !$record->visible) {
