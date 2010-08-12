@@ -71,7 +71,7 @@ class block_course_recent extends block_list {
 
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
-        $checkrole = true;
+        //$checkrole = true;
 
         $showhidden = true;
 
@@ -130,17 +130,20 @@ class block_course_recent extends block_list {
 
             $context = get_context_instance(CONTEXT_COURSE, $record->course);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
+            $showcourse = has_capability('moodle/course:viewparticipants', $context, $USER->id);
 
-            if ($showhidden and !$record->visible) {
-                $this->content->items[] = '<a class="' . 'dimmed' . '" href="'.
-                                          $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
-                                          $record->fullname . '</a>';
-                $this->content->icons[] = $icon;
-            } else {
-                $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '" href="'.
-                                          $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
-                                          $record->fullname . '</a>';
-                $this->content->icons[] = $icon;
+            if ($showcourse) {
+                if ($showhidden and !$record->visible) {
+                    $this->content->items[] = '<a class="' . 'dimmed' . '" href="'.
+                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
+                                              $record->fullname . '</a>';
+                    $this->content->icons[] = $icon;
+                } else {
+                    $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '" href="'.
+                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
+                                              $record->fullname . '</a>';
+                    $this->content->icons[] = $icon;
+                }
             }
         }
 
