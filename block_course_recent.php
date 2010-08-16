@@ -33,6 +33,7 @@ class block_course_recent extends block_list {
         require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
 
         if ($this->content !== NULL) {
+          print_object('debugging 1');
           return $this->content;
         }
 
@@ -114,10 +115,6 @@ class block_course_recent extends block_list {
         }
 
         $records = get_recordset_sql($sql, 0, $maximum);
-
-        if (empty($records)) {
-            print_object('debug1');
-        }
 
         if (!$records or rs_EOF($records)) {
 
