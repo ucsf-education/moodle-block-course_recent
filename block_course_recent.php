@@ -42,8 +42,7 @@ class block_course_recent extends block_list {
         $this->content->footer = '';
 
         if (!isloggedin() or isguestuser()) {
-            //return $this->content;
-	    return 'guest user 1';
+            return $this->content;
         }
 
         $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
@@ -115,6 +114,10 @@ class block_course_recent extends block_list {
         }
 
         $records = get_recordset_sql($sql, 0, $maximum);
+
+        if (empty($records)) {
+            print_object('debug1');
+        }
 
         if (!$records or rs_EOF($records)) {
 
