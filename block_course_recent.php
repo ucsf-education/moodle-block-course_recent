@@ -33,7 +33,6 @@ class block_course_recent extends block_list {
         require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
 
         if ($this->content !== NULL) {
-          print_object('debugging 1');
           return $this->content;
         }
 
@@ -78,7 +77,7 @@ class block_course_recent extends block_list {
 
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
-            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible
+            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible, c.guest, c.shortname
                     FROM (
                         SELECT l.course, l.time
                         FROM {$CFG->prefix}log l
@@ -94,7 +93,7 @@ class block_course_recent extends block_list {
                     INNER JOIN {$CFG->prefix}course c ON logs.course = c.id";
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
-            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible
+            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible, c.shortname
                     FROM (
                         SELECT l.course, l.time
                         FROM {$CFG->prefix}log l
@@ -123,7 +122,7 @@ class block_course_recent extends block_list {
             return $this->content;
         }
 
-        $icon  = '<img src="' . $CFG->pixpath . '/i/course.gif" class="icon" alt="' .
+        $icon  = '<img src="' . $CFG->pixpath . '/i/course_recent.gif" class="icon" alt="' .
                  get_string('coursecategory') . '" />';
 
         // Create links for each course that was viewed by the user
@@ -141,14 +140,16 @@ class block_course_recent extends block_list {
                 $showcourse = true;
             }
 
-            if ($showcourse) {
+            if ($showcourse or (isset($record->guest) and !empty($record->guest))) {
+
                 if ($showhidden and !$record->visible) {
-                    $this->content->items[] = '<a class="' . 'dimmed' . '" href="'.
+                    $this->content->items[] = '<a class="' . 'dimmed' . '" title="' . $record->shortname . '" href="'.
                                               $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
                                               $record->fullname . '</a>';
                     $this->content->icons[] = $icon;
                 } else {
-                    $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '" href="'.
+                    $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '"'.
+                                              ' title="' . $record->shortname . '" href="'.
                                               $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
                                               $record->fullname . '</a>';
                     $this->content->icons[] = $icon;

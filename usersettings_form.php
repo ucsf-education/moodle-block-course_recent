@@ -37,6 +37,8 @@ class usersettings_form extends moodleform {
         }
 
         $mform->addElement('select', 'userlimit', get_string('userlimit', 'block_course_recent'), $choices);
+        $mform->setHelpButton('userlimit', array('userlimit',
+                              get_string('userlimit', 'block_course_recent'), 'block_course_recent'));
         $mform->setDefault('userlimit', DEFAULT_MAX);
         $mform->setType('userlimit', PARAM_INT);
 

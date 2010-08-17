@@ -14,6 +14,6 @@ $string['musthaverole'] = 'User must have a role in the course';
 $string['musthaverole_desc'] = 'Check this if the user must have a role to view a course in the recently visited courses';
 $string['settings'] = 'User settings';
 $string['userlimit'] = 'Maximum number of courses to display';
-$string['youhavenotentredanycourses'] = 'You have not accessed any courses yet';
+$string['youhavenotentredanycourses'] = 'You will be able to see recent courses listed here once you are enrolled in some courses';
 
 ?>
