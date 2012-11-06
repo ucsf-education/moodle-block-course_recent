@@ -24,11 +24,10 @@
 class block_course_recent extends block_list {
     function init() {
         $this->title   = get_string('blockname', 'block_course_recent');
-        $this->version = 2010071300;
     }
 
     function get_content() {
-        global $CFG, $USER, $COURSE;
+        global $CFG, $DB, $USER, $COURSE;
 
         require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
 
@@ -55,7 +54,7 @@ class block_course_recent extends block_list {
 
         $maximum = isset($CFG->block_course_recent_default) ? $CFG->block_course_recent_default : DEFAULT_MAX;
 
-        $userlimit = get_field('block_course_recent', 'userlimit', 'userid', $USER->id);
+        $userlimit = $DB->get_field('block_course_recent', 'userlimit', array('userid' => $USER->id));
 
         // Override the global setting if the user limit is set
         if (!empty($userlimit)) {
@@ -113,9 +112,9 @@ class block_course_recent extends block_list {
                     INNER JOIN {$CFG->prefix}course c ON logs.course = c.id";
         }
 
-        $records = get_recordset_sql($sql, 0, $maximum);
+        $records = $DB->get_recordset_sql($sql, null, 0, $maximum);
 
-        if (!$records or rs_EOF($records)) {
+        if (!$records->valid()) {
 
             $this->content->items[] = get_string('youhavenotentredanycourses', 'block_course_recent');
             $this->content->icons[] = '';
@@ -126,7 +125,7 @@ class block_course_recent extends block_list {
                  get_string('coursecategory') . '" />';
 
         // Create links for each course that was viewed by the user
-        while ($record = rs_fetch_next_record($records)) {
+        foreach ($rs as $record) {
 
             $context = get_context_instance(CONTEXT_COURSE, $record->course);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
@@ -157,7 +156,7 @@ class block_course_recent extends block_list {
             }
         }
 
-        rs_close($records);
+        $rs->close();
 
         return $this->content;
     }

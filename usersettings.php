@@ -31,7 +31,7 @@ $courseid = required_param('courseid', PARAM_INT);
 
 $usersetting_form = new usersettings_form();
 
-$record = get_record('block_course_recent', 'userid', $USER->id);
+$record = $DB->get_record('block_course_recent', array('userid' => $USER->id));
 
 // Set the hidden form elements
 if (!empty($record)) {
@@ -54,9 +54,9 @@ if ($usersetting_form->is_cancelled()) {
 
 } else if ($data = $usersetting_form->get_data()) {
     if (!empty($data->id)) {
-        update_record('block_course_recent', $data);
+        $DB->update_record('block_course_recent', $data);
     } else {
-        insert_record('block_course_recent', $data);
+        $DB->insert_record('block_course_recent', $data);
     }
 
     redirect($CFG->wwwroot.'/course/view.php?id='. $courseid);
@@ -66,7 +66,7 @@ if ($usersetting_form->is_cancelled()) {
 $navlinks = array();
 
 if ($courseid && $courseid != SITEID) {
-    $shortname = get_field('course', 'shortname', 'id', $courseid);
+    $shortname = $DB->get_field('course', 'shortname', array('id' => $courseid));
     $navlinks[] = array(
         'name' => format_string($shortname),
         'link' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,
