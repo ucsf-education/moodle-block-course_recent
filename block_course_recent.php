@@ -23,7 +23,7 @@
 
 class block_course_recent extends block_list {
     function init() {
-        $this->title   = get_string('blockname', 'block_course_recent');
+        $this->title   = get_string('course_recent', 'block_course_recent');
     }
 
     function get_content() {
