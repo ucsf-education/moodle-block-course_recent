@@ -27,7 +27,7 @@ class block_course_recent extends block_list {
     }
 
     function get_content() {
-        global $CFG, $DB, $USER, $COURSE;
+        global $CFG, $DB, $USER, $COURSE, $OUTPUT;
 
         require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
 
@@ -121,11 +121,11 @@ class block_course_recent extends block_list {
             return $this->content;
         }
 
-        $icon  = '<img src="' . $CFG->pixpath . '/i/course_recent.gif" class="icon" alt="' .
+        $icon  = '<img src="' . $OUTPUT->pix_url('i/course_recent','block_course_recent') . '" class="icon" alt="' .
                  get_string('coursecategory') . '" />';
 
         // Create links for each course that was viewed by the user
-        foreach ($rs as $record) {
+        foreach ($records as $record) {
 
             $context = get_context_instance(CONTEXT_COURSE, $record->course);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
@@ -156,7 +156,7 @@ class block_course_recent extends block_list {
             }
         }
 
-        $rs->close();
+        $records->close();
 
         return $this->content;
     }
