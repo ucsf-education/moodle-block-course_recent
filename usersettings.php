@@ -77,10 +77,16 @@ $navlinks[] = array('name' => get_string('breadcrumb', 'block_course_recent'), '
 
 $navigation = build_navigation($navlinks);
 
-print_header_simple(get_string('header', 'block_course_recent'), '', $navigation);
+$site = get_site();
+$PAGE->set_title($site->shortname . ': ' . get_string('block', 'moodle') . ': '
+                 . get_string('pluginname', 'block_course_recent') . ': '
+                 .get_string('settings', 'block_course_recent'));
+
+$PAGE->set_heading($site->fullname);
+echo $OUTPUT->header();
 
 $usersetting_form->display();
 
-print_footer();
+echo $OUTPUT->footer();
 
 ?>
