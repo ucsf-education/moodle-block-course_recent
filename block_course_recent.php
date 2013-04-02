@@ -143,15 +143,13 @@ class block_course_recent extends block_list {
 
                 if ($showhidden and !$record->visible) {
                     $this->content->items[] = '<a class="' . 'dimmed' . '" title="' . $record->shortname . '" href="'.
-                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
+                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' . $icon .
                                               $record->fullname . '</a>';
-                    $this->content->icons[] = $icon;
                 } else {
                     $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '"'.
                                               ' title="' . $record->shortname . '" href="'.
-                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' .
+                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' . $icon .
                                               $record->fullname . '</a>';
-                    $this->content->icons[] = $icon;
                 }
             }
         }
