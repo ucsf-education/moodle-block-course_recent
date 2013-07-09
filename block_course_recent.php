@@ -70,13 +70,12 @@ class block_course_recent extends block_list {
 
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
-        //$checkrole = true;
 
         $showhidden = true;
 
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
-            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible, c.guest, c.shortname
+            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible, c.shortname
                     FROM (
                         SELECT l.course, l.time
                         FROM {$CFG->prefix}log l
