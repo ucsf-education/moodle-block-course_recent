@@ -15,13 +15,37 @@
  * Capability definitions.
  *
  * @package   blocks-course_recent
+ * @copyright &copy; 2014 The Regents of the University of California
  * @copyright 2010 Remote Learner - http://www.remote-learner.net/
  * @author    Akin Delamarre <adelamarre@remote-learner.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
 
-$block_course_recent_capabilities = array(
+$capabilities = array(
+    'block/course_recent:myaddinstance' => array(
+	'captype' => 'write',
+	'contextlevel' => CONTEXT_SYSTEM,
+	'archetypes' => array(
+	      'user' => CAP_ALLOW
+	      ),
+
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+	),
+
+    'block/course_recent:addinstance' => array(
+	 'riskbitmask' => RISK_SPAM | RISK_XSS,
+
+	 'captype' => 'write',
+	 'contextlevel' => CONTEXT_BLOCK,
+	 'archetypes' => array(
+	     'editingteacher' => CAP_ALLOW,
+	     'manager' => CAP_ALLOW
+	     ),
+
+	 'clonepermissionsfrom' => 'moodle/site:manageblocks'
+	 ),
 
     'block/course_recent:changelimit' => array(
 
@@ -31,9 +55,7 @@ $block_course_recent_capabilities = array(
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'admin' => CAP_ALLOW
+            'manager' => CAP_ALLOW
         )
     )
 );
-
-?>

@@ -21,6 +21,8 @@
  */
 
 
+require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
+
 class block_course_recent extends block_list {
     function init() {
         $this->title   = get_string('course_recent', 'block_course_recent');
@@ -28,8 +30,6 @@ class block_course_recent extends block_list {
 
     function get_content() {
         global $CFG, $DB, $USER, $COURSE, $OUTPUT;
-
-        require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
 
         if ($this->content !== NULL) {
           return $this->content;
@@ -44,7 +44,8 @@ class block_course_recent extends block_list {
             return $this->content;
         }
 
-        $context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
+        //$context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
+        $context = context_block::instance($this->instance->id);
 
         if (has_capability('block/course_recent:changelimit', $context, $USER->id)) {
             $this->content->footer = '<a href="' . $CFG->wwwroot.'/blocks/course_recent/usersettings.php?' .
@@ -126,7 +127,8 @@ class block_course_recent extends block_list {
         // Create links for each course that was viewed by the user
         foreach ($records as $record) {
 
-            $context = get_context_instance(CONTEXT_COURSE, $record->course);
+	    //$context = get_context_instance(CONTEXT_COURSE, $record->course);
+            $context = context_course::instance($record->course);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
 
             // Check the 'view participants' capability if the block has the
@@ -160,6 +162,20 @@ class block_course_recent extends block_list {
 
     function has_config() {
         return true;
+    }
+
+    /**
+     * Which page types this block may appear on.
+     *
+     * @return array page-type prefix => true/false.
+     */
+    function applicable_formats() {
+      return array('all' => true);
+    }
+
+
+    public function instance_allow_multiple() {
+      return false;
     }
 }
 
