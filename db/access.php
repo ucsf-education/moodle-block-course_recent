@@ -48,14 +48,14 @@ $capabilities = array(
 	 ),
 
     'block/course_recent:changelimit' => array(
-
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_BLOCK,
-        'legacy' => array(
-            'student' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    )
+	 'captype' => 'write',
+	 'contextlevel' => CONTEXT_BLOCK,
+	 'archetypes' => array(
+	     'user' => CAP_ALLOW,
+	     'student' => CAP_ALLOW,
+	     'teacher' => CAP_ALLOW,
+	     'editingteacher' => CAP_ALLOW,
+	     'manager' => CAP_ALLOW
+	     ),
+	)
 );

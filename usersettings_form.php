@@ -42,8 +42,11 @@ class usersettings_form extends moodleform {
         $mform->setType('userlimit', PARAM_INT);
 
         $mform->addElement('hidden', 'userid');
+	$mform->setType('userid', PARAM_INT);
         $mform->addElement('hidden', 'id');
+	$mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'courseid');
+	$mform->setType('courseid', PARAM_INT);
 
         $this->add_action_buttons(true);
     }

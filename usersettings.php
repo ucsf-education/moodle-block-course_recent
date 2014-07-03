@@ -25,9 +25,16 @@ require_once('usersettings_form.php');
 
 defined('MOODLE_INTERNAL') OR die('Direct access to this script is forbidden');
 
-require_login();
-
 $courseid = required_param('courseid', PARAM_INT);
+
+$PAGE->set_url('/blocks/course_recent/usersettings.php', array('courseid'=>$courseid));
+$PAGE->set_pagelayout('standard');
+
+if (!$course = $DB->get_record('course', array('id'=>$courseid))) {
+    print_error("That's an invalid course id");
+}
+
+require_login($course);
 
 $usersetting_form = new usersettings_form();
 
@@ -62,20 +69,11 @@ if ($usersetting_form->is_cancelled()) {
     redirect($CFG->wwwroot.'/course/view.php?id='. $courseid);
 }
 
-
-$navlinks = array();
-
 if ($courseid && $courseid != SITEID) {
     $shortname = $DB->get_field('course', 'shortname', array('id' => $courseid));
-    $navlinks[] = array(
-        'name' => format_string($shortname),
-        'link' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,
-        'type' => 'link'
-    );
+    $PAGE->navbar->add(format_string($shortname), new moodle_url('/course/view.php', array('id'=>$courseid)));
 }
-$navlinks[] = array('name' => get_string('breadcrumb', 'block_course_recent'), 'link' => '', 'type' => 'misc');
-
-$navigation = build_navigation($navlinks);
+$PAGE->navbar->add(get_string('breadcrumb', 'block_course_recent'));
 
 $site = get_site();
 $PAGE->set_title($site->shortname . ': ' . get_string('block', 'moodle') . ': '
