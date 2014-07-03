@@ -57,5 +57,13 @@ $capabilities = array(
 	     'editingteacher' => CAP_ALLOW,
 	     'manager' => CAP_ALLOW
 	     ),
+	 ),
+
+    'block/course_recent:showall' => array(
+	 'captype' => 'read',
+	 'contextlevel' => CONTEXT_BLOCK,
+	 'archetypes' => array(
+	     'manager' => CAP_ALLOW
+	     ),
 	)
 );

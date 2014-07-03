@@ -72,6 +72,10 @@ class block_course_recent extends block_list {
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
 
+	if (has_capability('block/course_recent:showall', $context, $USER->id)) {
+	  $checkrole = false;
+	}
+
         $showhidden = true;
 
         // Get a list of all courses that have been viewed by the user.

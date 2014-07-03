@@ -26,6 +26,7 @@ $string['course_recent'] = 'Recent Courses';
 $string['course_recent:addinstance'] = 'Add a new Recent Courses block';
 $string['course_recent:myaddinstance'] = 'Add a new Recent Courses block to My Moodle page';
 $string['course_recent:changelimit'] = 'Change the maximum number of courses to display';
+$string['course_recent:showall'] = 'Always show all courses no matter whether user have a role in the course or not';
 $string['default_max'] = 'Max number of courses';
 $string['default_max_desc'] = 'The maximum number of recently visited courses to the block will display by default.'.
                               '  This can be overwritten by the user if they have the capability to do so.';
