@@ -15,8 +15,9 @@
  * Library file containing API functions and defined constants.
  *
  * @package   blocks-course_recent
- * @copyright 2010 Remote Learner - http://www.remote-learner.net/
- * @author    Akin Delamarre <adelamarre@remote-learner.net>
+ * @copyright &copy; 2014 The Regents of the University of California
+ *            2010 Remote Learner - http://www.remote-learner.net/
+ * @author    Carson Tam <carson.tam@ucsf.edu>, Akin Delamarre <adelamarre@remote-learner.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
