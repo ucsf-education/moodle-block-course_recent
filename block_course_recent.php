@@ -80,29 +80,27 @@ class block_course_recent extends block_list {
 
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
-            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible, c.shortname
-                    FROM (
-                        SELECT l.course, l.time
-                        FROM {$CFG->prefix}log l
-                        ";
+	    $sql = "SELECT l.course, c.fullname, c.visible, c.shortname
+                    FROM {$CFG->prefix}log l
+                    JOIN {$CFG->prefix}course c ON l.course = c.id
+                    ";
 
             $sql .= "WHERE l.userid = {$USER->id}
                         AND l.course NOT IN(0, 1)
                         AND l.action = 'view'
                         ";
 
-            $sql .= "ORDER BY l.time DESC
-                    ) AS logs
-                    INNER JOIN {$CFG->prefix}course c ON logs.course = c.id";
+            $sql .= "GROUP BY l.course
+                     ORDER BY max(l.time) DESC";
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
-            $sql = "SELECT DISTINCT(logs.course), c.fullname, c.visible, c.shortname
-                    FROM (
-                        SELECT l.course, l.time
-                        FROM {$CFG->prefix}log l
-                        INNER JOIN {$CFG->prefix}context ctx ON l.course = ctx.instanceid
-                        INNER JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
-                        ";
+
+	    $sql = "SELECT l.course, c.fullname, c.visible, c.shortname
+                    FROM {$CFG->prefix}log l
+                    JOIN {$CFG->prefix}course c ON l.course = c.id
+                    JOIN {$CFG->prefix}context ctx ON l.course = ctx.instanceid
+                    JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
+                    ";
 
             $sql .= "WHERE l.userid = {$USER->id}
                         AND l.course NOT IN(0, 1)
@@ -111,9 +109,8 @@ class block_course_recent extends block_list {
                         AND l.action = 'view'
                         ";
 
-            $sql .= "ORDER BY l.time DESC
-                    ) AS logs
-                    INNER JOIN {$CFG->prefix}course c ON logs.course = c.id";
+            $sql .= "GROUP BY l.course
+                     ORDER BY max(l.time) DESC";
         }
 
         $records = $DB->get_recordset_sql($sql, null, 0, $maximum);
