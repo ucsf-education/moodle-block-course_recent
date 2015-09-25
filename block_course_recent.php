@@ -80,37 +80,39 @@ class block_course_recent extends block_list {
 
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
-	    $sql = "SELECT l.course, c.fullname, c.visible, c.shortname
-                    FROM {$CFG->prefix}log l
-                    JOIN {$CFG->prefix}course c ON l.course = c.id
+	    $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
+                    FROM {$CFG->prefix}logstore_standard_log l
+                    JOIN {$CFG->prefix}course c ON l.courseid = c.id
                     ";
 
             $sql .= "WHERE l.userid = {$USER->id}
-                        AND l.course NOT IN(0, 1)
-                        AND l.action = 'view'
+                        AND l.target = 'course'
+                        AND l.courseid NOT IN(0, 1)
+                        AND l.action = 'viewed'
                         ";
 
-            $sql .= "GROUP BY l.course
-                     ORDER BY max(l.time) DESC";
+            $sql .= "GROUP BY l.courseid
+                     ORDER BY max(l.timecreated) DESC";
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
 
-	    $sql = "SELECT l.course, c.fullname, c.visible, c.shortname
-                    FROM {$CFG->prefix}log l
-                    JOIN {$CFG->prefix}course c ON l.course = c.id
-                    JOIN {$CFG->prefix}context ctx ON l.course = ctx.instanceid
+	    $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
+                    FROM {$CFG->prefix}logstore_standard_log l
+                    JOIN {$CFG->prefix}course c ON l.courseid = c.id
+                    JOIN {$CFG->prefix}context ctx ON l.courseid = ctx.instanceid
                     JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
                     ";
 
             $sql .= "WHERE l.userid = {$USER->id}
-                        AND l.course NOT IN(0, 1)
+                        AND l.target = 'course'
+                        AND l.courseid NOT IN(0, 1)
                         AND ctx.contextlevel = " . CONTEXT_COURSE . "
                         AND ra.userid = l.userid
-                        AND l.action = 'view'
+                        AND l.action = 'viewed'
                         ";
 
-            $sql .= "GROUP BY l.course
-                     ORDER BY max(l.time) DESC";
+            $sql .= "GROUP BY l.courseid
+                     ORDER BY max(l.timecreated) DESC";
         }
 
         $records = $DB->get_recordset_sql($sql, null, 0, $maximum);
@@ -129,7 +131,7 @@ class block_course_recent extends block_list {
         foreach ($records as $record) {
 
 	    //$context = get_context_instance(CONTEXT_COURSE, $record->course);
-            $context = context_course::instance($record->course);
+            $context = context_course::instance($record->courseid);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
 
             // Check the 'view participants' capability if the block has the
@@ -145,12 +147,12 @@ class block_course_recent extends block_list {
 
                 if ($showhidden and !$record->visible) {
                     $this->content->items[] = '<a class="' . 'dimmed' . '" title="' . $record->shortname . '" href="'.
-                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' . $icon .
+                                              $CFG->wwwroot .'/course/view.php?id=' . $record->courseid . '">' . $icon .
                                               $record->fullname . '</a>';
                 } else {
                     $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '"'.
                                               ' title="' . $record->shortname . '" href="'.
-                                              $CFG->wwwroot .'/course/view.php?id=' . $record->course . '">' . $icon .
+                                              $CFG->wwwroot .'/course/view.php?id=' . $record->courseid . '">' . $icon .
                                               $record->fullname . '</a>';
                 }
             }
