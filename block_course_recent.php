@@ -181,5 +181,3 @@ class block_course_recent extends block_list {
       return false;
     }
 }
-
-?>

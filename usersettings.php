@@ -87,5 +87,3 @@ echo $OUTPUT->header();
 $usersetting_form->display();
 
 echo $OUTPUT->footer();
-
-?>

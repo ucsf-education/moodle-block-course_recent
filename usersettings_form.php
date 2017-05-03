@@ -67,5 +67,3 @@ class usersettings_form extends moodleform {
 
     }
 }
-
-?>

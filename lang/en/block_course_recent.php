@@ -39,5 +39,3 @@ $string['settings'] = 'User settings';
 $string['userlimit'] = 'Maximum number of courses to display';
 $string['userlimit_help'] = 'Specify the maximum number of courses to display in the Recent Course block here.';
 $string['youhavenotentredanycourses'] = 'You will be able to see recent courses listed here once you have accessed some of your enrolled courses.';
-
-?>

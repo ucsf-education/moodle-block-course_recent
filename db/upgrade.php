@@ -64,5 +64,3 @@ function xmldb_block_course_recent_upgrade($oldversion = 0) {
 
     return $result;
 }
-
-?>
