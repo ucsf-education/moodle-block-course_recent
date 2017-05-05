@@ -78,6 +78,8 @@ class block_course_recent extends block_list {
 
         $showhidden = true;
 
+        $query_params = array();
+
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
             $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
@@ -85,7 +87,7 @@ class block_course_recent extends block_list {
                     JOIN {course} c ON l.courseid = c.id
                     ";
 
-            $sql .= "WHERE l.userid = {$USER->id}
+            $sql .= "WHERE l.userid = ?
                         AND l.target = 'course'
                         AND l.courseid NOT IN(0, 1)
                         AND l.action = 'viewed'
@@ -93,6 +95,8 @@ class block_course_recent extends block_list {
 
             $sql .= "GROUP BY l.courseid
                      ORDER BY max(l.timecreated) DESC";
+
+            $query_params[] = $USER->id;
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
 
@@ -103,19 +107,22 @@ class block_course_recent extends block_list {
                     JOIN {role_assignments} ra ON ra.contextid = ctx.id
                     ";
 
-            $sql .= "WHERE l.userid = {$USER->id}
+            $sql .= "WHERE l.userid = ?
                         AND l.target = 'course'
                         AND l.courseid NOT IN(0, 1)
-                        AND ctx.contextlevel = " . CONTEXT_COURSE . "
+                        AND ctx.contextlevel = ?
                         AND ra.userid = l.userid
                         AND l.action = 'viewed'
                         ";
 
             $sql .= "GROUP BY l.courseid
                      ORDER BY max(l.timecreated) DESC";
-        }
 
-        $records = $DB->get_recordset_sql($sql, null, 0, $maximum);
+            $query_params[] = $USER->id;
+            $query_params[] = CONTEXT_COURSE;
+         }
+
+        $records = $DB->get_recordset_sql($sql, $query_params, 0, $maximum);
 
         if (!$records->valid()) {
 
