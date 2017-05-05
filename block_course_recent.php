@@ -78,6 +78,8 @@ class block_course_recent extends block_list {
 
         $showhidden = true;
 
+        $three_months_ago = strtotime('-3 months');
+
         $query_params = array();
 
         // Get a list of all courses that have been viewed by the user.
@@ -89,10 +91,12 @@ class block_course_recent extends block_list {
                       AND l.target = 'course'
                       AND l.courseid NOT IN(0, 1)
                       AND l.action = 'viewed'
+                      AND l.timecreated >= ?
                     GROUP BY l.courseid
                     ORDER BY max(l.timecreated) DESC";
 
             $query_params[] = $USER->id;
+            $query_params[] = $three_months_ago;
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
 
@@ -104,13 +108,15 @@ class block_course_recent extends block_list {
                     WHERE l.userid = ?
                       AND l.target = 'course'
                       AND l.courseid NOT IN(0, 1)
+                      AND l.action = 'viewed'
+                      AND l.timecreated >= ?
                       AND ctx.contextlevel = ?
                       AND ra.userid = l.userid
-                      AND l.action = 'viewed'
                     GROUP BY l.courseid
                     ORDER BY max(l.timecreated) DESC";
 
             $query_params[] = $USER->id;
+            $query_params[] = $three_months_ago;
             $query_params[] = CONTEXT_COURSE;
          }
 
