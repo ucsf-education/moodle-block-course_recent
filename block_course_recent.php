@@ -72,15 +72,15 @@ class block_course_recent extends block_list {
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
 
-	if (has_capability('block/course_recent:showall', $context, $USER->id)) {
-	  $checkrole = false;
-	}
+        if (has_capability('block/course_recent:showall', $context, $USER->id)) {
+          $checkrole = false;
+        }
 
         $showhidden = true;
 
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
-	    $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
+            $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
                     FROM {$CFG->prefix}logstore_standard_log l
                     JOIN {$CFG->prefix}course c ON l.courseid = c.id
                     ";
@@ -96,7 +96,7 @@ class block_course_recent extends block_list {
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
 
-	    $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
+            $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
                     FROM {$CFG->prefix}logstore_standard_log l
                     JOIN {$CFG->prefix}course c ON l.courseid = c.id
                     JOIN {$CFG->prefix}context ctx ON l.courseid = ctx.instanceid
@@ -130,7 +130,7 @@ class block_course_recent extends block_list {
         // Create links for each course that was viewed by the user
         foreach ($records as $record) {
 
-	    //$context = get_context_instance(CONTEXT_COURSE, $record->course);
+            //$context = get_context_instance(CONTEXT_COURSE, $record->course);
             $context = context_course::instance($record->courseid);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
 
