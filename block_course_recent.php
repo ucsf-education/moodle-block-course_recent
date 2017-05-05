@@ -81,8 +81,8 @@ class block_course_recent extends block_list {
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
             $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
-                    FROM {$CFG->prefix}logstore_standard_log l
-                    JOIN {$CFG->prefix}course c ON l.courseid = c.id
+                    FROM {logstore_standard_log} l
+                    JOIN {course} c ON l.courseid = c.id
                     ";
 
             $sql .= "WHERE l.userid = {$USER->id}
@@ -97,10 +97,10 @@ class block_course_recent extends block_list {
             // The following SQL will ensure that the user has a current role assignment within the course.
 
             $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
-                    FROM {$CFG->prefix}logstore_standard_log l
-                    JOIN {$CFG->prefix}course c ON l.courseid = c.id
-                    JOIN {$CFG->prefix}context ctx ON l.courseid = ctx.instanceid
-                    JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
+                    FROM {logstore_standard_log} l
+                    JOIN {course} c ON l.courseid = c.id
+                    JOIN {context} ctx ON l.courseid = ctx.instanceid
+                    JOIN {role_assignments} ra ON ra.contextid = ctx.id
                     ";
 
             $sql .= "WHERE l.userid = {$USER->id}
