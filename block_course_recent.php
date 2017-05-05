@@ -85,16 +85,12 @@ class block_course_recent extends block_list {
             $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
                     FROM {logstore_standard_log} l
                     JOIN {course} c ON l.courseid = c.id
-                    ";
-
-            $sql .= "WHERE l.userid = ?
-                        AND l.target = 'course'
-                        AND l.courseid NOT IN(0, 1)
-                        AND l.action = 'viewed'
-                        ";
-
-            $sql .= "GROUP BY l.courseid
-                     ORDER BY max(l.timecreated) DESC";
+                    WHERE l.userid = ?
+                      AND l.target = 'course'
+                      AND l.courseid NOT IN(0, 1)
+                      AND l.action = 'viewed'
+                    GROUP BY l.courseid
+                    ORDER BY max(l.timecreated) DESC";
 
             $query_params[] = $USER->id;
         } else {
@@ -105,18 +101,14 @@ class block_course_recent extends block_list {
                     JOIN {course} c ON l.courseid = c.id
                     JOIN {context} ctx ON l.courseid = ctx.instanceid
                     JOIN {role_assignments} ra ON ra.contextid = ctx.id
-                    ";
-
-            $sql .= "WHERE l.userid = ?
-                        AND l.target = 'course'
-                        AND l.courseid NOT IN(0, 1)
-                        AND ctx.contextlevel = ?
-                        AND ra.userid = l.userid
-                        AND l.action = 'viewed'
-                        ";
-
-            $sql .= "GROUP BY l.courseid
-                     ORDER BY max(l.timecreated) DESC";
+                    WHERE l.userid = ?
+                      AND l.target = 'course'
+                      AND l.courseid NOT IN(0, 1)
+                      AND ctx.contextlevel = ?
+                      AND ra.userid = l.userid
+                      AND l.action = 'viewed'
+                    GROUP BY l.courseid
+                    ORDER BY max(l.timecreated) DESC";
 
             $query_params[] = $USER->id;
             $query_params[] = CONTEXT_COURSE;
