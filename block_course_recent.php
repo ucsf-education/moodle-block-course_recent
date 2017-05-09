@@ -72,50 +72,55 @@ class block_course_recent extends block_list {
         // Set flag to check user's role on the course
         $checkrole = !empty($CFG->block_course_recent_musthaverole);
 
-	if (has_capability('block/course_recent:showall', $context, $USER->id)) {
-	  $checkrole = false;
-	}
+        if (has_capability('block/course_recent:showall', $context, $USER->id)) {
+          $checkrole = false;
+        }
 
         $showhidden = true;
 
+        $three_months_ago = strtotime('-3 months');
+
+        $query_params = array();
+
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
-	    $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
-                    FROM {$CFG->prefix}logstore_standard_log l
-                    JOIN {$CFG->prefix}course c ON l.courseid = c.id
-                    ";
+            $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
+                    FROM {logstore_standard_log} l
+                    JOIN {course} c ON l.courseid = c.id
+                    WHERE l.userid = ?
+                      AND l.target = 'course'
+                      AND l.courseid NOT IN(0, 1)
+                      AND l.action = 'viewed'
+                      AND l.timecreated >= ?
+                    GROUP BY l.courseid
+                    ORDER BY max(l.timecreated) DESC";
 
-            $sql .= "WHERE l.userid = {$USER->id}
-                        AND l.target = 'course'
-                        AND l.courseid NOT IN(0, 1)
-                        AND l.action = 'viewed'
-                        ";
-
-            $sql .= "GROUP BY l.courseid
-                     ORDER BY max(l.timecreated) DESC";
+            $query_params[] = $USER->id;
+            $query_params[] = $three_months_ago;
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
 
-	    $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
-                    FROM {$CFG->prefix}logstore_standard_log l
-                    JOIN {$CFG->prefix}course c ON l.courseid = c.id
-                    JOIN {$CFG->prefix}context ctx ON l.courseid = ctx.instanceid
-                    JOIN {$CFG->prefix}role_assignments ra ON ra.contextid = ctx.id
-                    ";
+            $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
+                    FROM {logstore_standard_log} l
+                    JOIN {course} c ON l.courseid = c.id
+                    JOIN {context} ctx ON l.courseid = ctx.instanceid
+                    JOIN {role_assignments} ra ON ra.contextid = ctx.id
+                    WHERE l.userid = ?
+                      AND l.target = 'course'
+                      AND l.courseid NOT IN(0, 1)
+                      AND l.action = 'viewed'
+                      AND l.timecreated >= ?
+                      AND ctx.contextlevel = ?
+                      AND ra.userid = l.userid
+                    GROUP BY l.courseid
+                    ORDER BY max(l.timecreated) DESC";
 
-            $sql .= "WHERE l.userid = {$USER->id}
-                        AND l.target = 'course'
-                        AND l.courseid NOT IN(0, 1)
-                        AND ctx.contextlevel = " . CONTEXT_COURSE . "
-                        AND ra.userid = l.userid
-                        AND l.action = 'viewed'
-                        ";
+            $query_params[] = $USER->id;
+            $query_params[] = $three_months_ago;
+            $query_params[] = CONTEXT_COURSE;
+         }
 
-            $sql .= "GROUP BY l.courseid
-                     ORDER BY max(l.timecreated) DESC";
-        }
-
-        $records = $DB->get_recordset_sql($sql, null, 0, $maximum);
+        $records = $DB->get_recordset_sql($sql, $query_params, 0, $maximum);
 
         if (!$records->valid()) {
 
@@ -130,7 +135,7 @@ class block_course_recent extends block_list {
         // Create links for each course that was viewed by the user
         foreach ($records as $record) {
 
-	    //$context = get_context_instance(CONTEXT_COURSE, $record->course);
+            //$context = get_context_instance(CONTEXT_COURSE, $record->course);
             $context = context_course::instance($record->courseid);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
 
