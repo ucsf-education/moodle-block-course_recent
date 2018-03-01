@@ -84,10 +84,15 @@ class block_course_recent extends block_list {
 
         // Get a list of all courses that have been viewed by the user.
         if (!$checkrole) {
+            // Note: make sure this query utilizes the key, `mdl_logsstanlog_useconconcr_ix`
+            // (`userid`,`contextlevel`,`contextinstanceid`,`crud`,`edulevel`,`timecreated`)
+            // in the `mdl_logstore_standard_log` table to improve performance.
+
             $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
                     FROM {logstore_standard_log} l
                     JOIN {course} c ON l.courseid = c.id
                     WHERE l.userid = ?
+                      AND l.contextlevel = ?
                       AND l.target = 'course'
                       AND l.courseid NOT IN(0, 1)
                       AND l.action = 'viewed'
@@ -96,9 +101,13 @@ class block_course_recent extends block_list {
                     ORDER BY max(l.timecreated) DESC";
 
             $query_params[] = $USER->id;
+            $query_params[] = CONTEXT_COURSE;
             $query_params[] = $three_months_ago;
         } else {
             // The following SQL will ensure that the user has a current role assignment within the course.
+            // Note: make sure the query utilizes this key, `mdl_logsstanlog_useconconcr_ix`
+            // (`userid`,`contextlevel`,`contextinstanceid`,`crud`,`edulevel`,`timecreated`)
+            // in the `mdl_logstore_standard_log` table to improve performance.
 
             $sql = "SELECT l.courseid, c.fullname, c.visible, c.shortname
                     FROM {logstore_standard_log} l
@@ -106,18 +115,18 @@ class block_course_recent extends block_list {
                     JOIN {context} ctx ON l.courseid = ctx.instanceid
                     JOIN {role_assignments} ra ON ra.contextid = ctx.id
                     WHERE l.userid = ?
+                      AND l.contextlevel = ?
                       AND l.target = 'course'
                       AND l.courseid NOT IN(0, 1)
                       AND l.action = 'viewed'
                       AND l.timecreated >= ?
-                      AND ctx.contextlevel = ?
-                      AND ra.userid = l.userid
+-- not sure if I should remove AND ra.userid = l.userid
                     GROUP BY l.courseid
                     ORDER BY max(l.timecreated) DESC";
 
             $query_params[] = $USER->id;
-            $query_params[] = $three_months_ago;
             $query_params[] = CONTEXT_COURSE;
+            $query_params[] = $three_months_ago;
          }
 
         $records = $DB->get_recordset_sql($sql, $query_params, 0, $maximum);
