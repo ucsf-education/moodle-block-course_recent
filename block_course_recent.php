@@ -129,8 +129,7 @@ class block_course_recent extends block_list {
             return $this->content;
         }
 
-        $icon  = '<img src="' . $OUTPUT->pix_url('i/course_recent','block_course_recent') . '" class="icon" alt="' .
-                 get_string('coursecategory') . '" />';
+        $icon  = $OUTPUT->pix_icon('i/course_recent', get_string('coursecategory'), 'block_course_recent');
 
         // Create links for each course that was viewed by the user
         foreach ($records as $record) {
