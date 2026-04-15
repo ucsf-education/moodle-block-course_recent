@@ -62,7 +62,6 @@ if (!empty($record)) {
 
 if ($usersettingform->is_cancelled()) {
     redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
-
 } else if ($data = $usersettingform->get_data()) {
     if (!empty($data->id)) {
         $DB->update_record('block_course_recent', $data);
