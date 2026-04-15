@@ -61,7 +61,7 @@ if (!empty($record)) {
 }
 
 if ($usersettingform->is_cancelled()) {
-    redirect($CFG->wwwroot.'/course/view.php?id='. $courseid);
+    redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
 
 } else if ($data = $usersettingform->get_data()) {
     if (!empty($data->id)) {
@@ -70,7 +70,7 @@ if ($usersettingform->is_cancelled()) {
         $DB->insert_record('block_course_recent', $data);
     }
 
-    redirect($CFG->wwwroot.'/course/view.php?id='. $courseid);
+    redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
 }
 
 if ($courseid && $courseid != SITEID) {
@@ -82,7 +82,7 @@ $PAGE->navbar->add(get_string('breadcrumb', 'block_course_recent'));
 $site = get_site();
 $PAGE->set_title($site->shortname . ': ' . get_string('block', 'moodle') . ': '
                  . get_string('pluginname', 'block_course_recent') . ': '
-                 .get_string('settings', 'block_course_recent'));
+                 . get_string('settings', 'block_course_recent'));
 
 $PAGE->set_heading($site->fullname);
 echo $OUTPUT->header();

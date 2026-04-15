@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
+require_once($CFG->dirroot . '/blocks/course_recent/lib.php');
 
 /**
  * Recent courses block class.
@@ -71,8 +71,8 @@ class block_course_recent extends block_list {
         $context = context_block::instance($this->instance->id);
 
         if (has_capability('block/course_recent:changelimit', $context, $USER->id)) {
-            $this->content->footer = '<a href="' . $CFG->wwwroot.'/blocks/course_recent/usersettings.php?' .
-                                     'courseid='.$COURSE->id . '">' . get_string('settings', 'block_course_recent') .
+            $this->content->footer = '<a href="' . $CFG->wwwroot . '/blocks/course_recent/usersettings.php?' .
+                                     'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_recent') .
                                      '</a>';
         }
 
@@ -155,7 +155,6 @@ class block_course_recent extends block_list {
         $records = $DB->get_recordset_sql($sql, $queryparams, 0, $maximum);
 
         if (!$records->valid()) {
-
             $this->content->items[] = get_string('youhavenotentredanycourses', 'block_course_recent');
             $this->content->icons[] = '';
             return $this->content;
@@ -165,7 +164,6 @@ class block_course_recent extends block_list {
 
         // Create links for each course that was viewed by the user.
         foreach ($records as $record) {
-
             $context = context_course::instance($record->courseid);
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $USER->id);
 
@@ -179,15 +177,14 @@ class block_course_recent extends block_list {
             }
 
             if ($showcourse || (isset($record->guest) && !empty($record->guest))) {
-
                 if ($showhidden && !$record->visible) {
-                    $this->content->items[] = '<a class="' . 'dimmed' . '" title="' . $record->shortname . '" href="'.
-                                              $CFG->wwwroot .'/course/view.php?id=' . $record->courseid . '">' . $icon .
+                    $this->content->items[] = '<a class="' . 'dimmed' . '" title="' . $record->shortname . '" href="' .
+                                              $CFG->wwwroot . '/course/view.php?id=' . $record->courseid . '">' . $icon .
                                               $record->fullname . '</a>';
                 } else {
-                    $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '"'.
-                                              ' title="' . $record->shortname . '" href="'.
-                                              $CFG->wwwroot .'/course/view.php?id=' . $record->courseid . '">' . $icon .
+                    $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '"' .
+                                              ' title="' . $record->shortname . '" href="' .
+                                              $CFG->wwwroot . '/course/view.php?id=' . $record->courseid . '">' . $icon .
                                               $record->fullname . '</a>';
                 }
             }
