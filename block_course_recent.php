@@ -158,7 +158,6 @@ class block_course_recent extends block_list {
             return $this->content;
         }
 
-
         // Create links for each course that was viewed by the user.
         foreach ($records as $record) {
             $context = context_course::instance($record->courseid);
