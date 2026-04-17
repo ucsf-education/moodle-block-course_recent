@@ -103,7 +103,7 @@ EOD;
         $userid = $contextlist->get_user()->id;
 
         // Filter out any contexts that are not specific to the given user.
-        $contexts = array_filter($contextlist->get_contexts(), function($context) use($userid) {
+        $contexts = array_filter($contextlist->get_contexts(), function ($context) use ($userid) {
             return $context->contextlevel === CONTEXT_USER && $context->instanceid === $userid;
         });
 
@@ -114,7 +114,7 @@ EOD;
         $params = ['userid' => $userid];
         $sql = "SELECT b.* FROM {block_course_recent} b WHERE b.userid = :userid ORDER BY b.id";
         $records = $DB->get_records_sql($sql, $params);
-        $data = (object) array_map(function($record) {
+        $data = (object) array_map(function ($record) {
             return [
                 'user' => $record->userid,
                 'userlimit' => $record->userlimit,
@@ -158,7 +158,7 @@ EOD;
         $userid = $contextlist->get_user()->id;
 
         // Filter out any contexts that are not specific to the given user.
-        $contexts = array_filter($contextlist->get_contexts(), function($context) use($userid) {
+        $contexts = array_filter($contextlist->get_contexts(), function ($context) use ($userid) {
             return $context->contextlevel === CONTEXT_USER && $context->instanceid === $userid;
         });
 

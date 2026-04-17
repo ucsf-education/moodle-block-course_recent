@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/blocks/course_recent/lib.php');
+require_once($CFG->dirroot . '/blocks/course_recent/lib.php');
 
 $choices = [];
 
