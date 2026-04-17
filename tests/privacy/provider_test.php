@@ -43,7 +43,6 @@ use dml_exception;
  * @covers     \block_course_recent\privacy\provider
  */
 final class provider_test extends provider_testcase {
-
     /**
      * Test getting the context for the user ID related to this plugin.
      * @throws dml_exception
