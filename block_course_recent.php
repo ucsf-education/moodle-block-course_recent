@@ -61,7 +61,6 @@ class block_course_recent extends block_list {
 
         $this->content         = new stdClass();
         $this->content->items  = [];
-        $this->content->icons  = [];
         $this->content->footer = '';
 
         if (!isloggedin() || isguestuser()) {
@@ -156,11 +155,9 @@ class block_course_recent extends block_list {
 
         if (!$records->valid()) {
             $this->content->items[] = get_string('youhavenotentredanycourses', 'block_course_recent');
-            $this->content->icons[] = '';
             return $this->content;
         }
 
-        $icon  = $OUTPUT->pix_icon('i/course_recent', get_string('coursecategory'), 'block_course_recent');
 
         // Create links for each course that was viewed by the user.
         foreach ($records as $record) {
@@ -179,12 +176,12 @@ class block_course_recent extends block_list {
             if ($showcourse || (isset($record->guest) && !empty($record->guest))) {
                 if ($showhidden && !$record->visible) {
                     $this->content->items[] = '<a class="' . 'dimmed' . '" title="' . $record->shortname . '" href="' .
-                                              $CFG->wwwroot . '/course/view.php?id=' . $record->courseid . '">' . $icon .
+                                              $CFG->wwwroot . '/course/view.php?id=' . $record->courseid . '">' .
                                               $record->fullname . '</a>';
                 } else {
                     $this->content->items[] = '<a class="' . (($record->visible) ? 'visible' : 'dimmed') . '"' .
                                               ' title="' . $record->shortname . '" href="' .
-                                              $CFG->wwwroot . '/course/view.php?id=' . $record->courseid . '">' . $icon .
+                                              $CFG->wwwroot . '/course/view.php?id=' . $record->courseid . '">' .
                                               $record->fullname . '</a>';
                 }
             }
