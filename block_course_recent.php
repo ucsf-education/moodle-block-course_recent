@@ -61,6 +61,7 @@ class block_course_recent extends block_list {
 
         $this->content         = new stdClass();
         $this->content->items  = [];
+        $this->content->icons  = [];
         $this->content->footer = '';
 
         if (!isloggedin() || isguestuser()) {
