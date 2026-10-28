@@ -120,7 +120,7 @@ class block_course_recent extends block_list {
                       AND l.courseid NOT IN(0, 1)
                       AND l.action = 'viewed'
                       AND l.timecreated >= ?
-                    GROUP BY l.courseid
+                    GROUP BY l.courseid, c.fullname, c.visible, c.shortname
                     ORDER BY max(l.timecreated) DESC";
 
             $queryparams[] = $USER->id;
@@ -144,7 +144,7 @@ class block_course_recent extends block_list {
                       AND l.action = 'viewed'
                       AND l.timecreated >= ?
 -- not sure if I should remove AND ra.userid = l.userid
-                    GROUP BY l.courseid
+                    GROUP BY l.courseid, c.fullname, c.visible, c.shortname
                     ORDER BY max(l.timecreated) DESC";
 
             $queryparams[] = $USER->id;
